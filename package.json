@@ -1,0 +1,80 @@
+{
+  "name": "remember-token",
+  "version": "1.0.0",
+  "description": "🎂 Get paid for remembering what matters to people - The first blockchain platform that rewards human care and connection",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy:base-testnet": "hardhat run scripts/deploy.js --network base-goerli",
+    "deploy:base-mainnet": "hardhat run scripts/deploy.js --network base-mainnet",
+    "verify": "hardhat verify --network base-goerli",
+    "start": "node server/index.js",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write .",
+    "deploy-frontend": "cd frontend && npm run build && gh-pages -d dist",
+    "setup": "npm install && cd frontend && npm install"
+  },
+  "keywords": [
+    "blockchain",
+    "cryptocurrency",
+    "base-chain",
+    "social",
+    "memory",
+    "care",
+    "connection",
+    "web3",
+    "dapp",
+    "defi",
+    "social-fi"
+  ],
+  "author": "Remember Token Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/remember-token.git"
+  },
+  "homepage": "https://project-block.com",
+  "bugs": {
+    "url": "https://github.com/yourusername/remember-token/issues"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^1.0.0",
+    "@openzeppelin/contracts": "^4.9.0",
+    "hardhat": "^2.17.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.0",
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.0",
+    "prettier-plugin-solidity": "^1.1.0",
+    "gh-pages": "^6.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.7.0",
+    "web3": "^4.0.0",
+    "axios": "^1.5.0",
+    "mongoose": "^7.5.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3",
+    "nodemailer": "^6.9.0",
+    "node-cron": "^3.0.2",
+    "multer": "^1.4.5",
+    "helmet": "^7.0.0",
+    "rate-limiter-flexible": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

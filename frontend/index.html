@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remember Token - Get Paid for Caring</title>
+    <meta name="description" content="🎂 Get paid for remembering what matters to people. The first blockchain platform that rewards human care and connection.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Web3 -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .memory-card {
+            background: white;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .memory-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
+    <div id="app">
+        <!-- Header -->
+        <header class="p-6">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="text-4xl">🎂</span>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Remember Token</h1>
+                        <p class="text-blue-100 text-sm">Get paid for caring</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="walletInfo" class="hidden gradient-card px-4 py-2 rounded-lg text-white text-sm">
+                        <span id="walletAddress"></span>
+                        <span id="tokenBalance" class="ml-3 font-semibold"></span>
+                    </div>
+                    <button id="connectWallet" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
+                        Connect Wallet
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-6 pb-12">
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="gradient-card rounded-xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white" id="totalMemories">0</div>
+                    <div class="text-blue-100">Total Memories</div>
+                </div>
+                <div class="gradient-card rounded-xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white" id="verifiedMemories">0</div>
+                    <div class="text-blue-100">Verified</div>
+                </div>
+                <div class="gradient-card rounded-xl p-6 text-center">
+                    <div class="text-3xl font-bold text-white" id="totalRewards">0</div>
+                    <div class="text-blue-100">$RMEM Earned</div>
+                </div>
+            </div>
+
+            <!-- Create Memory Section -->
+            <div class="gradient-card rounded-xl p-8 mb-8">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="mr-3">📝</span>
+                    Create New Memory
+                </h2>
+                
+                <form id="createMemoryForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-blue-100 font-medium mb-2">Friend's Wallet Address</label>
+                            <input type="text" id="beneficiaryAddress" 
+                                class="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/10 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                                placeholder="0x...">
+                        </div>
+                        <div>
+                            <label class="block text-blue-100 font-medium mb-2">Memory Type</label>
+                            <select id="memoryType" 
+                                class="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <option value="0">🎂 Birthday (10 $RMEM)</option>
+                                <option value="1">💑 Anniversary (15 $RMEM)</option>
+                                <option value="2">💼 Job Interview (20 $RMEM)</option>
+                                <option value="3">🏥 Medical Appointment (25 $RMEM)</option>
+                                <option value="4">🎉 Major Life Event (30 $RMEM)</option>
+                                <option value="5">🐕 Pet Birthday (8 $RMEM)</option>
+                                <option value="6">🎓 Graduation (35 $RMEM)</option>
+                                <option value="7">💕 First Date (5 $RMEM)</option>
+                                <option value="8">⚰️ Funeral (40 $RMEM)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-blue-100 font-medium mb-2">Description</label>
+                        <input type="text" id="memoryDescription" 
+                            class="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/10 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                            placeholder="John's birthday party at 7PM">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-blue-100 font-medium mb-2">Event Date</label>
+                        <input type="datetime-local" id="eventDate" 
+                            class="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full py-4 rounded-lg font-semibold text-lg">
+                        💝 Create Memory
+                    </button>
+                </form>
+            </div>
+
+            <!-- My Memories -->
+            <div class="gradient-card rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="mr-3">💭</span>
+                    My Memories
+                </h2>
+                
+                <div id="memoriesList" class="space-y-4">
+                    <div class="text-center text-blue-200 py-8">
+                        <span class="text-4xl block mb-4">🌟</span>
+                        <p>No memories created yet. Start caring and earning!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Verification Modal -->
+        <div id="verifyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <div class="bg-white rounded-xl max-w-md w-full p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800">Verify Memory</h3>
+                <p id="verifyText" class="text-gray-600 mb-6"></p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">How meaningful was it? (1-5)</label>
+                        <select id="rating" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            <option value="5">⭐⭐⭐⭐⭐ Amazing</option>
+                            <option value="4">⭐⭐⭐⭐ Great</option>
+                            <option value="3">⭐⭐⭐ Good</option>
+                            <option value="2">⭐⭐ Okay</option>
+                            <option value="1">⭐ Meh</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Optional message</label>
+                        <textarea id="proof" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" 
+                            rows="3" placeholder="Thank you for remembering! 💝"></textarea>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button id="confirmVerify" class="btn-primary flex-1 py-3 rounded-lg font-semibold">
+                            ✅ Verify & Reward
+                        </button>
+                        <button id="cancelVerify" class="bg-gray-300 text-gray-700 flex-1 py-3 rounded-lg font-semibold hover:bg-gray-400">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contract Configuration
+        const CONTRACT_ADDRESS = '0x...'; // Will be filled after deployment
+        const BASE_CHAIN_ID = 8453;
+        const BASE_TESTNET_CHAIN_ID = 84531;
+        
+        // Contract ABI (simplified)
+        const CONTRACT_ABI = [
+            "function createMemory(address beneficiary, uint8 memoryType, string description, uint256 scheduledDate) external returns (uint256)",
+            "function verifyMemory(uint256 memoryId, string proof, uint256 rating) external",
+            "function getUserMemories(address user) external view returns (uint256[])",
+            "function getMemory(uint256 memoryId) external view returns (tuple(uint256 id, address rememberer, address beneficiary, uint8 memoryType, string description, uint256 scheduledDate, uint256 createdAt, bool isVerified, bool isRewarded, uint256 rewardAmount))",
+            "function balanceOf(address account) external view returns (uint256)",
+            "function getTotalMemories() external view returns (uint256)",
+            "function name() external view returns (string)",
+            "function symbol() external view returns (string)"
+        ];
+        
+        let provider, signer, contract, userAccount;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            checkWalletConnection();
+        });
+        
+        function setupEventListeners() {
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+            document.getElementById('createMemoryForm').addEventListener('submit', createMemory);
+            document.getElementById('confirmVerify').addEventListener('click', verifyMemory);
+            document.getElementById('cancelVerify').addEventListener('click', closeVerifyModal);
+        }
+        
+        async function checkWalletConnection() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        await connectWallet();
+                    }
+                } catch (error) {
+                    console.log('Wallet not connected');
+                }
+            }
+        }
+        
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask or another Web3 wallet');
+                return;
+            }
+            
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+                userAccount = await signer.getAddress();
+                
+                // Check if on correct network
+                const network = await provider.getNetwork();
+                if (network.chainId !== BigInt(BASE_TESTNET_CHAIN_ID) && network.chainId !== BigInt(BASE_CHAIN_ID)) {
+                    await switchToBaseNetwork();
+                }
+                
+                // Initialize contract
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                
+                // Update UI
+                updateWalletUI();
+                loadUserData();
+                
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Error connecting wallet: ' + error.message);
+            }
+        }
+        
+        async function switchToBaseNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x14A34' }], // Base Testnet
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [
+                                {
+                                    chainId: '0x14A34',
+                                    chainName: 'Base Goerli Testnet',
+                                    nativeCurrency: {
+                                        name: 'ETH',
+                                        symbol: 'ETH',
+                                        decimals: 18,
+                                    },
+                                    rpcUrls: ['https://goerli.base.org'],
+                                    blockExplorerUrls: ['https://goerli.basescan.org'],
+                                },
+                            ],
+                        });
+                    } catch (addError) {
+                        console.error('Error adding network:', addError);
+                    }
+                }
+            }
+        }
+        
+        async function updateWalletUI() {
+            document.getElementById('connectWallet').textContent = 'Connected';
+            document.getElementById('connectWallet').disabled = true;
+            document.getElementById('walletInfo').classList.remove('hidden');
+            document.getElementById('walletAddress').textContent = `${userAccount.substring(0, 6)}...${userAccount.substring(38)}`;
+            
+            // Get token balance
+            if (contract) {
+                try {
+                    const balance = await contract.balanceOf(userAccount);
+                    document.getElementById('tokenBalance').textContent = `${ethers.formatEther(balance)} $RMEM`;
+                } catch (error) {
+                    console.log('Contract not deployed yet');
+                    document.getElementById('tokenBalance').textContent = '0 $RMEM';
+                }
+            }
+        }
+        
+        async function loadUserData() {
+            if (!contract) return;
+            
+            try {
+                // Load stats
+                const totalMemories = await contract.getTotalMemories();
+                document.getElementById('totalMemories').textContent = totalMemories.toString();
+                
+                // Load user memories
+                const userMemoryIds = await contract.getUserMemories(userAccount);
+                await displayMemories(userMemoryIds);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        async function displayMemories(memoryIds) {
+            const memoriesContainer = document.getElementById('memoriesList');
+            
+            if (memoryIds.length === 0) {
+                memoriesContainer.innerHTML = `
+                    <div class="text-center text-blue-200 py-8">
+                        <span class="text-4xl block mb-4">🌟</span>
+                        <p>No memories created yet. Start caring and earning!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            memoriesContainer.innerHTML = '';
+            
+            for (const memoryId of memoryIds) {
+                try {
+                    const memory = await contract.getMemory(memoryId);
+                    const memoryCard = createMemoryCard(memory);
+                    memoriesContainer.appendChild(memoryCard);
+                } catch (error) {
+                    console.error(`Error loading memory ${memoryId}:`, error);
+                }
+            }
+        }
+        
+        function createMemoryCard(memory) {
+            const div = document.createElement('div');
+            div.className = 'memory-card rounded-lg p-6 shadow-lg';
+            
+            const eventDate = new Date(Number(memory.scheduledDate) * 1000);
+            const isVerified = memory.isVerified;
+            const canVerify = Date.now() >= Number(memory.scheduledDate) * 1000 && !isVerified;
+            
+            const memoryTypeNames = ['🎂 Birthday', '💑 Anniversary', '💼 Job Interview', '🏥 Medical Appointment', '🎉 Major Life Event', '🐕 Pet Birthday', '🎓 Graduation', '💕 First Date', '⚰️ Funeral'];
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">${memory.description}</h3>
+                        <p class="text-gray-600">${memoryTypeNames[memory.memoryType]}</p>
+                    </div>
+                    <div class="text-right">
+                        ${isVerified ? '<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">✅ Verified</span>' : 
+                          canVerify ? '<button onclick="openVerifyModal(' + memory.id + ')" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Verify</button>' : 
+                          '<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">⏳ Waiting</span>'}
+                    </div>
+                </div>
+                <div class="flex justify-between items-center text-sm text-gray-500">
+                    <span>Event: ${eventDate.toLocaleDateString()}</span>
+                    <span>Reward: ${ethers.formatEther(memory.rewardAmount)} $RMEM</span>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        async function createMemory(event) {
+            event.preventDefault();
+            
+            if (!contract) {
+                alert('Please connect your wallet first');
+                return;
+            }
+            
+            const beneficiary = document.getElementById('beneficiaryAddress').value;
+            const memoryType = document.getElementById('memoryType').value;
+            const description = document.getElementById('memoryDescription').value;
+            const eventDate = new Date(document.getElementById('eventDate').value).getTime() / 1000;
+            
+            if (!beneficiary || !description || !eventDate) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            try {
+                const tx = await contract.createMemory(beneficiary, memoryType, description, eventDate);
+                alert('Memory created! Transaction hash: ' + tx.hash);
+                
+                // Wait for confirmation
+                await tx.wait();
+                
+                // Refresh data
+                loadUserData();
+                
+                // Clear form
+                document.getElementById('createMemoryForm').reset();
+                
+            } catch (error) {
+                console.error('Error creating memory:', error);
+                alert('Error creating memory: ' + error.message);
+            }
+        }
+        
+        function openVerifyModal(memoryId) {
+            document.getElementById('verifyModal').classList.remove('hidden');
+            document.getElementById('verifyModal').dataset.memoryId = memoryId;
+        }
+        
+        function closeVerifyModal() {
+            document.getElementById('verifyModal').classList.add('hidden');
+        }
+        
+        async function verifyMemory() {
+            const memoryId = document.getElementById('verifyModal').dataset.memoryId;
+            const rating = document.getElementById('rating').value;
+            const proof = document.getElementById('proof').value;
+            
+            try {
+                const tx = await contract.verifyMemory(memoryId, proof, rating);
+                alert('Memory verified! Tokens will be rewarded. Transaction hash: ' + tx.hash);
+                
+                await tx.wait();
+                closeVerifyModal();
+                loadUserData();
+                
+            } catch (error) {
+                console.error('Error verifying memory:', error);
+                alert('Error verifying memory: ' + error.message);
+            }
+        }
+        
+        // Set minimum date to today
+        document.getElementById('eventDate').min = new Date().toISOString().slice(0, 16);
+    </script>
+</body>
+</html>
